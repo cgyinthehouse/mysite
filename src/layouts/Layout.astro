@@ -1,0 +1,81 @@
+---
+import '../styles/global.css';
+import styles from '../styles/layout.module.css';
+import utilStyles from '../styles/utils.module.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  home?: boolean;
+}
+
+const {
+  title,
+  description = "Learn how to build a personal website using Astro",
+  home = false,
+} = Astro.props;
+
+const name = "kent";
+const siteTitle = "Next.js Sample Website";
+const displayTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="description" content={description} />
+    <title>{displayTitle}</title>
+
+    {/* Open Graph */}
+    <meta property="og:title" content={displayTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`https://og-image.vercel.app/${encodeURI(siteTitle)}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div class={styles.container}>
+      <header class={styles.header}>
+        {home ? (
+          <>
+            <img
+              src="/images/profile.jpg"
+              class={utilStyles.borderCircle}
+              height={144}
+              width={144}
+              alt=""
+            />
+            <h1 class={utilStyles.heading2Xl}>{name}</h1>
+          </>
+        ) : (
+          <>
+            <a href="/">
+              <img
+                src="/images/profile.jpg"
+                class={utilStyles.borderCircle}
+                height={108}
+                width={108}
+                alt=""
+              />
+            </a>
+            <h2 class={utilStyles.headingLg}>
+              <a class={utilStyles.colorInherit} href="/">
+                {name}
+              </a>
+            </h2>
+          </>
+        )}
+      </header>
+      <main>
+        <slot />
+      </main>
+      {!home && (
+        <div class={styles.backToHome}>
+          <a href="/">Back to home</a>
+        </div>
+      )}
+    </div>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import utilStyles from '../../styles/utils.module.css';
+
+// Generate paths for all markdown files in the posts collection
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map(post => ({
+    params: { id: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title}>
+  <article>
+    <h1 class={utilStyles.headingXl}>{post.data.title}</h1>
+    <div class={utilStyles.lightText}>
+      <FormattedDate dateString={post.data.date} />
+    </div>
+    <div>
+      <Content />
+    </div>
+  </article>
+</Layout>

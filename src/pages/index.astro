@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import utilStyles from '../styles/utils.module.css';
+import { getCollection } from 'astro:content';
+
+// Query content collections and sort posts by date (descending)
+const allPostsData = await getCollection('posts');
+const sortedPosts = allPostsData.sort((a, b) => {
+  if (a.data.date < b.data.date) {
+    return 1;
+  } else {
+    return -1;
+  }
+});
+---
+
+<Layout home>
+  <section class={utilStyles.headingMd}>
+    <p>This is Kent Ok bye</p>
+    <p>
+      (This is a sample website - you’ll be building a site like this on{" "}
+      <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
+    </p>
+  </section>
+  <section class={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
+    <h2 class={utilStyles.headingLg}>Blog</h2>
+    <ul class={utilStyles.list}>
+      {sortedPosts.map((post) => (
+        <li class={utilStyles.listItem}>
+          <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+          <br />
+          <small class={utilStyles.lightText}>
+            <FormattedDate dateString={post.data.date} />
+          </small>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>
