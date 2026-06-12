@@ -7,10 +7,15 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^4.16.13"
+    "@iconify-json/lucide": "^1.2.111",
+    "@iconify-json/simple-icons": "^1.2.86",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.4.2",
+    "astro-icon": "^1.1.5",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "18.15.11",
-    "typescript": "5.0.4"
+    "@types/node": "25.9.1",
+    "typescript": "6.0.3"
   }
 }

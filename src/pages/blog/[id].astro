@@ -1,0 +1,118 @@
+---
+import { getCollection, render } from "astro:content"
+import Layout from "@layouts/Layout.astro"
+import FormattedDate from "@components/FormattedDate.astro"
+import "../../styles/global.css"
+import { Icon } from "astro-icon/components"
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog")
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post }
+  }))
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+
+// Calculate reading time
+const wordCount = post.body ? post.body.split(/\s+/).length : 0
+const readingTime = Math.ceil(wordCount / 200) || 1 // 200 words per minute average
+---
+
+<Layout title={post.data.title}>
+  <!-- Reading Progress Bar -->
+  <div class="fixed top-0 left-0 w-full h-1 bg-violet-100/50 z-50">
+    <div
+      id="progress-bar"
+      class="h-full bg-violet-600 transition-all duration-75 w-0"
+    >
+    </div>
+  </div>
+
+  <article class="max-w-2xl mx-auto pt-6">
+    <!-- Title -->
+    <h1
+      class="text-4xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight"
+    >
+      {post.data.title}
+    </h1>
+
+    <!-- Glassmorphic Header Card -->
+    <div
+      class="p-5 rounded-2xl bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-sm mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 font-bold text-base border border-violet-200/50 shadow-inner"
+        >
+          K
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-800">Kent</p>
+          <p class="text-xs text-slate-500 font-medium">Full Stack Developer</p>
+        </div>
+      </div>
+
+      <div
+        class="flex items-center gap-4 text-xs font-semibold text-slate-500 sm:border-l sm:border-slate-200/80 sm:pl-4"
+      >
+        <div class="flex items-center gap-1.5">
+          <Icon name="lucide:calendar" class="w-4 h-4 text-slate-400" />
+          <FormattedDate dateString={post.data.date} />
+        </div>
+        <div class="flex items-center gap-1.5">
+          <Icon name="lucide:clock" class="w-4 h-4 text-slate-400" />
+          <span>{readingTime} min read</span>
+        </div>
+      </div>
+    </div>
+
+    <Content />
+  </article>
+</Layout>
+
+<script>
+  // Reading Progress Bar
+  const progressBar = document.getElementById("progress-bar")
+  window.addEventListener("scroll", () => {
+    const winScroll =
+      document.documentElement.scrollTop || document.body.scrollTop
+    const height =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight
+    const scrolled = height > 0 ? (winScroll / height) * 100 : 0
+    if (progressBar) {
+      progressBar.style.width = scrolled + "%"
+    }
+  })
+
+  // Copy Code Button Script
+  document.querySelectorAll("pre").forEach((pre) => {
+    pre.style.position = "relative"
+    pre.classList.add("group")
+
+    const button = document.createElement("button")
+    button.className =
+      "absolute top-3 right-3 p-1.5 rounded-md bg-slate-800/80 hover:bg-slate-700/80 text-slate-400 hover:text-white border border-slate-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:opacity-100 cursor-pointer flex items-center justify-center"
+    button.setAttribute("aria-label", "Copy code")
+    button.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'
+
+    pre.appendChild(button)
+
+    button.addEventListener("click", async () => {
+      const code = pre.querySelector("code")
+      if (code) {
+        await navigator.clipboard.writeText(code.innerText)
+        button.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><polyline points="20 6 9 17 4 12"/></svg>'
+        setTimeout(() => {
+          button.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'
+        }, 2000)
+      }
+    })
+  })
+</script>

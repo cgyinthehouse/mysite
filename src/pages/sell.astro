@@ -1,0 +1,167 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+import SellNav from '../components/sell/SellNav.astro';
+import SellHero from '../components/sell/SellHero.astro';
+import SellFilters from '../components/sell/SellFilters.astro';
+import SellGrid from '../components/sell/SellGrid.astro';
+import InquireModal from '../components/sell/InquireModal.astro';
+import SellFooter from '../components/sell/SellFooter.astro';
+
+const pageTitle = "Kent's Marketplace";
+const pageDescription = "Browse and buy quality used items from Kent. Everything has been carefully maintained and is priced to sell.";
+
+// Items are stored in src/content/data/items.toml
+// Add a new [item-id] block in that file to add a new listing — no other code changes needed.
+const rawItems = await getCollection('items');
+const items = rawItems.map((entry) => ({
+  id: entry.id,
+  ...entry.data,
+}));
+
+const categories = ["All", ...new Set(items.map(item => item.category))];
+const conditionColors: Record<string, string> = {
+  "Like New": "#22c55e",
+  "Good":     "#3b82f6",
+  "Fair":     "#f59e0b",
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="description" content={pageDescription} />
+    <title>{pageTitle} | Kent's Website</title>
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+
+  <body class="font-sans bg-[#0f0f13] text-[#f1f0f7] min-h-screen leading-relaxed">
+    <SellNav />
+    <SellHero />
+    <SellFilters categories={categories} />
+    <SellGrid items={items} conditionColors={conditionColors} />
+    <InquireModal />
+    <SellFooter />
+
+    <script>
+      // ── STATS ──
+      const items = document.querySelectorAll('.item-card');
+      const availableItems = document.querySelectorAll('.item-card:not(.sold)');
+      const allCategories = new Set(Array.from(items).map(el => (el as HTMLElement).dataset.category));
+
+      const availablePrices = Array.from(availableItems).map(el => {
+        const priceEl = el.querySelector('.card-price');
+        const match = priceEl?.textContent?.match(/\$(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      });
+
+      const avgPrice = availablePrices.length
+        ? Math.round(availablePrices.reduce((a, b) => a + b, 0) / availablePrices.length)
+        : 0;
+
+      document.getElementById('hero-available-count')!.textContent = `${availableItems.length}`;
+      document.getElementById('hero-category-count')!.textContent = `${allCategories.size}`;
+      document.getElementById('hero-avg-price')!.textContent = `$${avgPrice}`;
+
+      // ── FILTER & SEARCH ──
+      let activeCategory = 'All';
+      let searchQuery = '';
+
+      function filterItems() {
+        const cards = document.querySelectorAll<HTMLElement>('.item-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const cat = card.dataset.category ?? '';
+          const name = card.dataset.name ?? '';
+          const tags = card.dataset.tags ?? '';
+          const matchesCat = activeCategory === 'All' || cat === activeCategory;
+          const matchesSearch = name.includes(searchQuery) || tags.includes(searchQuery);
+
+          if (matchesCat && matchesSearch) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        const empty = document.getElementById('empty-state')!;
+        empty.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      // Category pills
+      document.getElementById('category-pills')!.addEventListener('click', (e) => {
+        const pill = (e.target as HTMLElement).closest('.pill') as HTMLButtonElement | null;
+        if (!pill) return;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeCategory = pill.dataset.category ?? 'All';
+        filterItems();
+      });
+
+      // Search
+      document.getElementById('search-input')!.addEventListener('input', (e) => {
+        searchQuery = (e.target as HTMLInputElement).value.toLowerCase();
+        filterItems();
+      });
+
+      // ── MODAL ──
+      const modalOverlay = document.getElementById('modal-overlay')!;
+      const modalItemName = document.getElementById('modal-item-name')!;
+
+      function openModal(itemName: string, itemPrice: string) {
+        modalItemName.textContent = `📦 ${itemName} — $${itemPrice}`;
+        modalOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        (document.getElementById('form-name') as HTMLInputElement).focus();
+      }
+
+      function closeModal() {
+        modalOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      // Inquire buttons
+      document.querySelectorAll<HTMLButtonElement>('.btn-inquire').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openModal(btn.dataset.itemName ?? '', btn.dataset.itemPrice ?? '');
+        });
+      });
+
+      // Close modal
+      document.getElementById('modal-close-btn')!.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      // Form submit
+      document.getElementById('inquire-form')!.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('form-submit-btn') as HTMLButtonElement;
+        btn.textContent = "✅ Sent! I'll get back to you soon";
+        btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+        btn.disabled = true;
+        setTimeout(() => {
+          closeModal();
+          btn.textContent = 'Send Inquiry 🚀';
+          btn.style.background = '';
+          btn.disabled = false;
+          (document.getElementById('inquire-form') as HTMLFormElement).reset();
+        }, 2500);
+      });
+    </script>
+  </body>
+</html>

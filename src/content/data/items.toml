@@ -1,0 +1,79 @@
+[aeropress]
+name        = "Aeropress Coffee Maker"
+category    = "Home"
+condition   = "Good"
+price       = 22
+description = "The best travel coffee maker. All parts included and working. Makes incredible espresso-style coffee."
+tags        = ["coffee", "kitchen", "travel"]
+emoji       = "☕"
+sold        = false
+
+[canon-ae1]
+name        = "Canon AE-1 Film Camera"
+category    = "Electronics"
+condition   = "Good"
+price       = 120
+description = "Classic 35mm SLR film camera. Works perfectly, comes with 50mm f/1.8 lens and original strap. Some cosmetic wear on body."
+tags        = ["film", "photography", "vintage"]
+emoji       = "📷"
+sold        = false
+
+[casio-a158w]
+name        = "Casio A158W Digital Watch"
+category    = "Accessories"
+condition   = "Good"
+price       = 35
+description = "Iconic stainless steel digital watch. Battery replaced last month, keeps perfect time. A timeless classic."
+tags        = ["watch", "retro", "casio"]
+emoji       = "⌚"
+sold        = false
+
+[mechanical-keyboard]
+name        = "Mechanical Keyboard (TKL)"
+category    = "Electronics"
+condition   = "Good"
+price       = 75
+description = "Tenkeyless mechanical keyboard with Cherry MX Brown switches. Tactile and quiet. Keycaps are in great condition."
+tags        = ["keyboard", "mechanical", "gaming"]
+emoji       = "⌨️"
+sold        = true
+
+[nike-air-force-1]
+name        = "Nike Air Force 1 (US 10)"
+category    = "Clothing"
+condition   = "Good"
+price       = 60
+description = "Classic white leather sneakers. Worn about 10 times. Minor scuffs on the sole, uppers are clean."
+tags        = ["shoes", "nike", "sneakers"]
+emoji       = "👟"
+sold        = false
+
+[pragmatic-programmer]
+name        = "The Pragmatic Programmer"
+category    = "Books"
+condition   = "Like New"
+price       = 20
+description = "20th anniversary edition. Read once, spine still looks perfect. Excellent read for any developer."
+tags        = ["book", "programming", "engineering"]
+emoji       = "📗"
+sold        = false
+
+[sony-wh1000xm3]
+name        = "Sony WH-1000XM3 Headphones"
+category    = "Electronics"
+condition   = "Like New"
+price       = 180
+description = "Industry-leading noise cancellation. Used for about 3 months, barely any signs of use. Includes original case and cables."
+tags        = ["audio", "wireless", "noise-cancelling"]
+emoji       = "🎧"
+sold        = false
+
+[vintage-leather-wallet]
+name        = "Vintage Leather Wallet"
+category    = "Accessories"
+condition   = "Fair"
+price       = 25
+description = "Genuine leather bifold wallet with beautiful patina. Multiple card slots and cash compartment. Shows natural aging."
+tags        = ["leather", "vintage", "accessory"]
+emoji       = "👜"
+sold        = false

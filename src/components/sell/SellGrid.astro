@@ -1,0 +1,34 @@
+---
+import ItemCard from './ItemCard.astro';
+
+interface Item {
+  id: string;
+  name: string;
+  category: string;
+  condition: string;
+  price: number;
+  description: string;
+  tags: string[];
+  emoji: string;
+  sold: boolean;
+}
+
+interface Props {
+  items: Item[];
+  conditionColors: Record<string, string>;
+}
+
+const { items, conditionColors } = Astro.props;
+---
+<div class="max-w-[1100px] mx-auto px-[1.2rem] sm:px-8 pb-16">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6" id="items-grid">
+    {items.map((item) => (
+      <ItemCard item={item} conditionColors={conditionColors} />
+    ))}
+  </div>
+
+  <div class="empty-state text-center py-16 px-8 text-[#8b8aa6] hidden" id="empty-state">
+    <div class="text-5xl mb-4">🔍</div>
+    <p class="text-[1.1rem]">No items match your search. Try a different filter!</p>
+  </div>
+</div>
